@@ -56,12 +56,12 @@ Note: Please see [security considerations](#security-considerations) before inst
 ## Optional Features
 
 ### Hover Reveal (off by default)
-When the sidebar is hidden (zen mode), hovering the left edge of the screen reveals the drawer temporarily. Moving the mouse away hides it again.
 
 ![Sidebar autohide example](fennec-sidebar-autohide.gif)
 
 To enable: uncomment the `hover-reveal` region in `userChrome.css` (remove the `/*` and `*/` comment markers around the block). Restart Firefox.
 
+Sidebar must be enabled. When enabled it will now autohide and show depending upon mouse position inside the hover area at edge of the window.
 
 ## Usage Guide
 
