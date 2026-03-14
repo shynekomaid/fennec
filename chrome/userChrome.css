@@ -173,6 +173,8 @@ body:has(#sidebar-box[hidden]:not(:hover)) #navigator-toolbox {
   width: 0px !important;
   overflow: hidden !important;
   pointer-events: none;
+  opacity: 0 !important;
+  transition: width 0.3s ease, opacity 0.2s ease !important;
 }
 
 body:has(#sidebar-box[hidden]:not(:hover)) toolbaritem#urlbar-container {
@@ -278,7 +280,7 @@ body:has(#sidebar-box[hidden]):has(#navigator-toolbox:hover) toolbaritem#urlbar-
   padding-top: var(--fen-gap-y) !important;
 /*   background-color: var(--fen-color) !important; */
   background-color: var(--fen-header-bg-color) !important;
-  transition: width 0.3s ease !important;
+  transition: width 0.3s ease, opacity 0.3s ease 0.2s !important;
 }
 
 /* the thing that comes up when you hold alt, there's already settings menu */
