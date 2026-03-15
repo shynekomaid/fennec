@@ -1,7 +1,6 @@
-Fennec
-A customized Mozilla Firefox experience designed around minimalism and optimized vertical tab support. Achieved through userChrome.css modifications and cohesive extension integrations.
+# Fennec
 
-![Sidebar toggle example](fennec-sidebar-toggle.gif)
+A customized Mozilla Firefox experience designed around minimalism and optimized vertical tab support. Achieved through userChrome.css modifications and cohesive extension integrations.
 
 | Sidebar Open | Zen Mode |
 |:---:|:---:|
@@ -76,8 +75,6 @@ irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | ie
 ## Optional Features
 
 ### Autohide (off by default)
-
-![Sidebar autohide example](fennec-sidebar-autohide.gif)
 
 Sidebar must be enabled (not toggled off). When enabled, the drawer auto-collapses when the mouse leaves and reappears when hovering the left edge of the window.
 
