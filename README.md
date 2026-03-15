@@ -1,4 +1,4 @@
-# Fennec
+Fennec
 A customized Mozilla Firefox experience designed around minimalism and optimized vertical tab support. Achieved through userChrome.css modifications and cohesive extension integrations.
 
 ![Sidebar toggle example](fennec-sidebar-toggle.gif)
@@ -21,34 +21,42 @@ A customized Mozilla Firefox experience designed around minimalism and optimized
 
 ## Installation
 
-Note: Please see [security considerations](#security-considerations) before installing
+> Please see [security considerations](#security-considerations) before installing
 
-1. Install [Sideberry extension](https://addons.mozilla.org/en-US/firefox/addon/sidebery/)
-2. Set Firefox's Browser Layout to Fennec's supported configuration
-   - Goto settings in firefox
-   - In search bar, type "hori" (searching for horizontal tabs)
-     - You should now see "Browser Layout" in the search results
-   - Enable "Horizontal Tabs" if it is not enabled
-   - "Show Sidebar" is off 
-     - not supported (just use hotkeys to switch to history/bookmarks/gpt as desired)
-   - Sidebar is configured to appear on left side (browser default)
-3. Add CSS
-   - Enable firefox to be able to use userChrome.css
-     - `toolkit.legacyUserProfileCustomizations.stylesheets` in `about:config`
-   - Navigate to your profile directory
-      - Note: on the Flatpak version of Firefox the profile directory is `~/.var/app/org.mozilla.firefox/.mozilla/firefox/<profile>`
-      - Open Firefox
-      - Type `about:support` in the address bar and press enter
-      - Look for the Application Basics section.
-      - Click on Open Profile Folder. This will open the folder which contains your user data.
-   - Add a chrome folder and userChrome.css
-      - Now create a `chrome` folder in your profile folder if it doesn't exist
-      - Copy `userChrome.css` to the `chrome` folder, from this repo's chrome folder
-   - (Optional but suggested) Insert sideberry.css from this repo in the sideberry custom css settings
-      - Right click on sideberry extension and open settings, or in the extension menu select the gear icon
-      - Scroll down the settings section until the end, you should see "Styles Editor" tab on the left hand side, second to last option
-      - There is a code area on the right hand of the screen, paste css code in there
-4. Restart Firefox
+### 1. Install the Sideberry Extension
+
+Install [Sideberry](https://addons.mozilla.org/en-US/firefox/addon/sidebery/) from Firefox Add-ons.
+
+### 2. Configure Firefox Settings
+
+1. Open Firefox Settings (`about:preferences`)
+2. Search for **"horizontal tabs"** and set **Horizontal Tabs** to **enabled**
+3. Search for **"show sidebar"** and set **Show Sidebar** to **off**
+   - With this off, you'll use keyboard shortcuts to toggle Sideberry, history, bookmarks, etc.
+4. Ensure the sidebar is configured to appear on the **left side** (this is the default)
+
+### 3. Install userChrome.css
+
+**Enable custom stylesheets in Firefox:**
+1. Go to `about:config` in the address bar
+2. Search for `toolkit.legacyUserProfileCustomizations.stylesheets` and set it to `true`
+
+**Locate your Firefox profile directory:**
+1. Go to `about:support` in the address bar
+2. Under "Application Basics", click **Open Profile Folder**
+   - Flatpak users: the profile directory is at `~/.var/app/org.mozilla.firefox/.mozilla/firefox/<profile>`
+
+**Copy the CSS file:**
+1. Inside the profile folder, create a `chrome` directory if it doesn't already exist
+2. Copy `userChrome.css` from this repo's `chrome/` folder into that `chrome` directory
+
+### 4. (Optional) Apply Sideberry Styles
+
+1. Right-click the Sideberry icon and select **Settings** (or click the gear icon in the extension menu)
+2. In the left sidebar, scroll to the bottom and select **Styles Editor**
+3. Paste the contents of `sideberry.css` from this repo into the editor
+
+### 5. Restart Firefox
 
 ### Optional Recommended Extensions
 - **[Vimium](https://addons.mozilla.org/en-US/firefox/addon/vimium-ff/)** - Keyboard-driven navigation that complements the minimal, distraction-free interface
