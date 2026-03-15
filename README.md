@@ -22,15 +22,44 @@ Fennec is a minimal Firefox setup built with userChrome.css, designed around ver
 
 > Please see [security considerations](#security-considerations) before installing
 
-### 1. Install the Sideberry Extension
+### Nix / Home Manager
+
+If you use Nix, Fennec can be installed declaratively — CSS, prefs, and Sideberry all managed through your flake. See [nix/module.nix](nix/module.nix) for details.
+
+1. Add fennec to your flake inputs:
+```nix
+inputs.fennec.url = "github:tompassarelli/fennec";
+```
+
+2. Import the module in your Home Manager config:
+```nix
+imports = [ inputs.fennec.homeManagerModules.default ];
+```
+
+3. Enable it:
+```nix
+programs.fennec = {
+  enable = true;
+  profile = "your-profile-name";  # optional, defaults to "default-release"
+  autohide = false;               # optional
+};
+```
+
+4. Rebuild with `nixos-rebuild switch` or `home-manager switch`
+
+> Note: Sideberry is installed automatically via [NUR](https://github.com/nix-community/NUR). Ensure NUR is in your flake inputs and overlays. Set `sideberry = false` if you manage extensions separately.
+
+### Everyone else
+
+#### 1. Install the Sideberry Extension
 
 Install [Sideberry](https://addons.mozilla.org/en-US/firefox/addon/sidebery/) from Firefox Add-ons.
 
-### 2. Install CSS
+#### 2. Install CSS
 
 Choose **one** of the two methods below:
 
-#### Option A: Automated (recommended)
+##### Option A: Automated (recommended)
 
 The script does the following:
 - Backs up your existing `chrome` folder (if any) to `chrome.bak.<timestamp>`
@@ -49,7 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/tompassarelli/fennec/main/install.s
 irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | iex
 ```
 
-#### Option B: Manual
+##### Option B: Manual
 
 **Enable required Firefox settings:**
 
@@ -70,7 +99,7 @@ irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | ie
 2. Copy `userChrome.css` from this repo's `chrome/` folder into that `chrome` directory
 3. Copy `autohide.css` into the same `chrome` directory (needed if you want [autohide](#autohide-off-by-default))
 
-### 3. Restart Firefox
+#### 3. Restart Firefox
    - Note: if the sidebar is invisible, you might have it toggled off. Try `Ctrl+H` to toggle history, then activate the Sideberry tabs menu from there by clicking on the extension icon.
 
 ## Optional Features
