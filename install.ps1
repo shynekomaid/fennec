@@ -7,6 +7,14 @@ $latestUrl = "https://api.github.com/repos/$repo/releases/latest"
 $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) "fennec-install-$([System.Guid]::NewGuid().ToString('N').Substring(0,8))"
 
 try {
+    # Check if Firefox is running (skip in CI)
+    if (-not $env:FENNEC_LOCAL) {
+        if (Get-Process firefox -ErrorAction SilentlyContinue) {
+            Write-Host "Firefox is currently running. Please close it before continuing."
+            Read-Host "Press Enter to continue after closing Firefox"
+        }
+    }
+
     # Locate Firefox profiles directory
     $profilesDir = Join-Path $env:APPDATA "Mozilla\Firefox\Profiles"
     if (-not (Test-Path $profilesDir)) {
@@ -104,20 +112,28 @@ try {
     }
     Copy-Item -Path (Join-Path $chromeSource "*") -Destination $chromeDir -Recurse -Force
 
-    # Enable custom stylesheets in user.js if not already set
+    # Configure Firefox preferences in user.js
     $userJs = Join-Path $profile.FullName "user.js"
-    $pref = 'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);'
-    $needsPref = $true
-    if (Test-Path $userJs) {
-        $content = Get-Content $userJs -Raw
-        if ($content -match "toolkit.legacyUserProfileCustomizations.stylesheets") {
-            $needsPref = $false
+
+    function Set-FirefoxPref {
+        param([string]$Key, [string]$Value)
+        $line = "user_pref(`"$Key`", $Value);"
+        $needsPref = $true
+        if (Test-Path $userJs) {
+            $content = Get-Content $userJs -Raw
+            if ($content -match [regex]::Escape($Key)) {
+                $needsPref = $false
+            }
+        }
+        if ($needsPref) {
+            Write-Host "Setting $Key in user.js"
+            Add-Content -Path $userJs -Value $line
         }
     }
-    if ($needsPref) {
-        Write-Host "Enabling toolkit.legacyUserProfileCustomizations.stylesheets in user.js"
-        Add-Content -Path $userJs -Value $pref
-    }
+
+    Set-FirefoxPref "toolkit.legacyUserProfileCustomizations.stylesheets" "true"
+    Set-FirefoxPref "sidebar.verticalTabs" "false"
+    Set-FirefoxPref "sidebar.revamp" "false"
 
     Write-Host "Done. Restart Firefox for changes to take effect."
 } finally {

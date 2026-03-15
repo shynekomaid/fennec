@@ -33,7 +33,7 @@ Choose **one** of the two methods below:
 
 #### Option A: Automated
 
-The script backs up your existing `chrome` folder (if any) and copies Fennec's files into your Firefox profile. It also enables `toolkit.legacyUserProfileCustomizations.stylesheets` automatically.
+The script backs up your existing `chrome` folder (if any), copies Fennec's files into your Firefox profile, and configures the required Firefox settings automatically.
 
 **macOS / Linux:**
 ```bash
@@ -47,9 +47,14 @@ irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | ie
 
 #### Option B: Manual
 
-**Enable custom stylesheets in Firefox:**
+**Enable required Firefox settings:**
+
+> Note: only `toolkit.legacyUserProfileCustomizations.stylesheets` requires `about:config`. The rest are defaults historically and can also be changed in Settings.
+
 1. Go to `about:config` in the address bar
-2. Search for `toolkit.legacyUserProfileCustomizations.stylesheets` and set it to `true`
+2. Set `toolkit.legacyUserProfileCustomizations.stylesheets` to `true`
+3. Set `sidebar.verticalTabs` to `false`
+4. Set `sidebar.revamp` to `false`
 
 **Locate your Firefox profile directory:**
 1. Go to `about:support` in the address bar
@@ -61,18 +66,7 @@ irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | ie
 2. Copy `userChrome.css` from this repo's `chrome/` folder into that `chrome` directory
 3. Copy `autohide.css` into the same `chrome` directory (needed if you want [autohide](#autohide-off-by-default))
 
-### 3. Configure Firefox Settings
-
-1. Open Firefox Settings (`about:preferences`)
-2. Search for **"horizontal tabs"** and set **Horizontal Tabs** to **enabled**
-3. Search for **"show sidebar"** and set **Show Sidebar** to **off**
-   - With this off, you'll use keyboard shortcuts to toggle Sideberry, history, bookmarks, etc.
-4. Ensure the sidebar is configured to appear on the **left side** (this is the default)
-
-### 4. Restart Firefox
-
-### Optional Recommended Extensions
-- **[Vimium](https://addons.mozilla.org/en-US/firefox/addon/vimium-ff/)** - Keyboard-driven navigation that complements the minimal, distraction-free interface
+### 3. Restart Firefox
 
 ## Optional Features
 
@@ -83,14 +77,15 @@ irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | ie
 Sidebar must be enabled (not toggled off). When enabled, the drawer auto-collapses when the mouse leaves and reappears when hovering the left edge of the window.
 
 To enable:
-1. Ensure `autohide.css` is in the same `chrome` directory as `userChrome.css` (see [installation step 3](#3-install-userchromecss))
+1. Ensure `autohide.css` is in the same `chrome` directory as `userChrome.css` (see [installation step 2](#2-install-css))
 2. Uncomment `@import url("autohide.css");` in `userChrome.css`
 3. Restart Firefox
 
-## Usage Guide
+### Recommended Extensions
 
-Sideberry is used for tabs, toggling the extension shortcut set to sideberry toggles the whole UI.
-This also applies to: history, bookmarks, etc. shortcuts
+- **[Vimium](https://addons.mozilla.org/en-US/firefox/addon/vimium-ff/)** - Keyboard-driven navigation that complements the minimal, distraction-free interface
+
+## Resources
 
 💬 **[Discussions](https://github.com/tompassarelli/fennec-ui/discussions)** - ask questions, share setups, and connect with other users
 
@@ -98,11 +93,11 @@ This also applies to: history, bookmarks, etc. shortcuts
 
 🛤️ **[Roadmap](https://github.com/tompassarelli/fennec-ui/wiki/Roadmap)** - planned features and development timeline
 
-👾 **[Known Issues & Troubleshooting](https://github.com/tompassarelli/fennec-ui/wiki/Troubleshooting)** - noted some common issues and workarounds 
+👾 **[Known Issues & Troubleshooting](https://github.com/tompassarelli/fennec-ui/wiki/Troubleshooting)** - noted some common issues and workarounds
 
 ## Security Considerations
 
-- The install guide directs users to download Firefox extensions. Firefox extensions can introduce security vulnerabilities and/or take direct hostile actions against users. 
+- The install guide directs users to download Firefox extensions. Firefox extensions can introduce security vulnerabilities and/or take direct hostile actions against users.
 - Zen Mode hides the UI which obviously suppresses security signals like padlock warnings. In appreciation of this concern, Fennec will still attempt to surface a custom HTTP Not Secure security warning prepended to page content as a header alert. Not a solution against phishing and other attacks/vulnerabilities, only toggle the UI after the page has been verified as secure and trustworthy.
 - **Use at your own risk** - The author is not liable for any security issues, data breaches, or other damages of usage of this repository or mentioned extensions.
 - **You are responsible** for verifying the security of websites, code, and extensions used

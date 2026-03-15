@@ -8,6 +8,14 @@ tmp_dir=""
 cleanup() { if [ -n "$tmp_dir" ]; then rm -rf "$tmp_dir"; fi; }
 trap cleanup EXIT
 
+# Check if Firefox is running (skip in CI)
+if [ -z "${FENNEC_LOCAL:-}" ]; then
+    if pgrep -x firefox >/dev/null 2>&1; then
+        echo "Firefox is currently running. Please close it before continuing."
+        read -rp "Press Enter to continue after closing Firefox..."
+    fi
+fi
+
 # Locate the Firefox profiles directory
 case "$(uname -s)" in
     Darwin)
@@ -116,12 +124,20 @@ echo "Installing chrome folder..."
 mkdir -p "$chrome_dir"
 cp -r "$extracted"/* "$chrome_dir/"
 
-# Enable custom stylesheets in user.js if not already set
+# Configure Firefox preferences in user.js
 user_js="$profile/user.js"
-pref='user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);'
-if [ ! -f "$user_js" ] || ! grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$user_js"; then
-    echo "Enabling toolkit.legacyUserProfileCustomizations.stylesheets in user.js"
-    echo "$pref" >> "$user_js"
-fi
+
+set_pref() {
+    local key="$1" value="$2"
+    local pref="user_pref(\"$key\", $value);"
+    if [ ! -f "$user_js" ] || ! grep -q "$key" "$user_js"; then
+        echo "Setting $key in user.js"
+        echo "$pref" >> "$user_js"
+    fi
+}
+
+set_pref "toolkit.legacyUserProfileCustomizations.stylesheets" "true"
+set_pref "sidebar.verticalTabs" "false"
+set_pref "sidebar.revamp" "false"
 
 echo "Done. Restart Firefox for changes to take effect."

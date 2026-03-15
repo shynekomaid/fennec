@@ -26,7 +26,9 @@ jobs:
 
           test -d "$profile/chrome" || { echo "FAIL: chrome/ missing"; exit 1; }
           test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: pref not in user.js"; exit 1; }
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
 
           echo "--- chrome/ contents ---"
           ls -la "$profile/chrome/"
@@ -50,7 +52,9 @@ jobs:
 
           test -d "$profile/chrome" || { echo "FAIL: chrome/ missing at Flatpak path"; exit 1; }
           test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: pref not in user.js"; exit 1; }
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
 
           # Confirm native path was NOT used
           if [ -d "$HOME/.mozilla/firefox" ]; then
@@ -80,7 +84,9 @@ jobs:
 
           test -d "$profile/chrome" || { echo "FAIL: chrome/ missing"; exit 1; }
           test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: pref not in user.js"; exit 1; }
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
 
           echo "--- chrome/ contents ---"
           ls -la "$profile/chrome/"
@@ -110,7 +116,9 @@ jobs:
           if (-not (Test-Path "$prof\chrome")) { Write-Error "FAIL: chrome/ missing"; exit 1 }
           if (-not (Test-Path "$prof\chrome\userChrome.css")) { Write-Error "FAIL: userChrome.css missing"; exit 1 }
           $userJs = Get-Content "$prof\user.js" -Raw
-          if ($userJs -notmatch "toolkit.legacyUserProfileCustomizations.stylesheets") { Write-Error "FAIL: pref not in user.js"; exit 1 }
+          if ($userJs -notmatch "toolkit.legacyUserProfileCustomizations.stylesheets") { Write-Error "FAIL: stylesheets pref missing"; exit 1 }
+          if ($userJs -notmatch "sidebar.verticalTabs") { Write-Error "FAIL: sidebar.verticalTabs pref missing"; exit 1 }
+          if ($userJs -notmatch "sidebar.revamp") { Write-Error "FAIL: sidebar.revamp pref missing"; exit 1 }
 
           Write-Host "--- chrome/ contents ---"
           Get-ChildItem "$prof\chrome"
