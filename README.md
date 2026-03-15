@@ -29,7 +29,9 @@ Install [Sideberry](https://addons.mozilla.org/en-US/firefox/addon/sidebery/) fr
 
 ### 2. Install CSS
 
-#### Automated
+Choose **one** of the two methods below:
+
+#### Option A: Automated
 
 The script backs up your existing `chrome` folder (if any) and copies Fennec's files into your Firefox profile. It also enables `toolkit.legacyUserProfileCustomizations.stylesheets` automatically.
 
@@ -43,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/tompassarelli/fennec/main/install.s
 irm https://raw.githubusercontent.com/tompassarelli/fennec/main/install.ps1 | iex
 ```
 
-#### Manual
+#### Option B: Manual
 
 **Enable custom stylesheets in Firefox:**
 1. Go to `about:config` in the address bar
