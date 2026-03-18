@@ -1,0 +1,514 @@
+/* ==========================================================================
+   FENNEC CORE THEME — DO NOT EDIT
+   ==========================================================================
+
+   ⚠️  This file is managed by Fennec. Your changes will be lost on update.
+   ========================================================================== */
+
+/* #region CSS Variables & Theme Handling
+   ========================================================================== */
+:root {
+  /* --- Colors (Theme Aware) --- */
+  --fen-color: var(--toolbar-bgcolor, light-dark(#fafafb, #36363a));
+  --fen-header-bg-color: var(--fen-color);
+  --fen-urlbar-bg-color: var(--toolbar-field-background-color);
+
+  /* --- Gaps & Spacing --- */
+  --fen-gap-x: 10px;
+  --fen-gap-y: 6px;
+  --fen-show-sidebar-gap: 6px;
+  --fen-tab-mx: 1px;
+  --fen-sidebar-splitter-width: calc(1.2 * var(--fen-gap-x));
+  --fen-panelui-gap: 4px;
+
+  /* --- Dimensions --- */
+  --fen-max-width: 600px;
+  --fen-nav-btn-width: 31px;
+  --fen-urlbar-bg-height: 38px;
+  --fen-urlbar-border-radius: 4px;
+
+  /* --- Calculated Values --- */
+  --fen-nav-btn-gap: calc(
+    var(--fen-gap-x) + var(--fen-nav-btn-width) + var(--fen-panelui-gap)
+  );
+  --fen-header-height: calc(32px + 2 * var(--fen-gap-y));
+  --fen-header-btn-dim: 0.8;
+
+  --fen-tab-position-y: calc(
+    16px + var(--fen-header-height) + var(--fen-urlbar-bg-height)
+  );
+  --fen-urlbar-tabbar-gap: 12px;
+  --fen-urlbar-position-y: calc(
+    var(--fen-tab-position-y) + var(--fen-gap-y) -
+      var(--fen-urlbar-tabbar-gap) - 46px
+  );
+  --fen-urlbar-bg-position-y: calc(
+    var(--fen-urlbar-position-y) + var(--fen-gap-y) + 1px
+  );
+}
+
+/* Theme Support (Firefox Color / LWTheme) */
+:root[lwtheme] {
+  --fen-color: var(--toolbar-bgcolor);
+  --fen-header-bg-color: var(--toolbar-bgcolor);
+  --fen-urlbar-bg-color: var(--toolbar-field-background-color);
+  --fen-header-btn-dim: 1;
+}
+/* #endregion */
+
+/* #region Dynamic Sidebar Toggle
+   Animations for sidebar show/hide
+   Note: Conflicts with autohide.css — do not enable both
+   ========================================================================== */
+#sidebar-box[hidden] {
+  display: flex !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+  transition:
+    width 0.3s ease,
+    padding 0.3s step-end,
+    opacity 0.2s ease !important;
+}
+
+body:has(#sidebar-box[hidden]:not(:hover)) #navigator-toolbox {
+  width: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none;
+  opacity: 0 !important;
+  transition:
+    width 0.3s ease,
+    opacity 0.2s ease !important;
+}
+
+body:has(#sidebar-box[hidden]:not(:hover)) toolbaritem#urlbar-container {
+  width: 0 !important;
+  max-width: 0 !important;
+  pointer-events: none;
+}
+
+body:has(#sidebar-box[hidden]) #identity-icon-box {
+  background-color: transparent !important;
+}
+
+body:has(#sidebar-box[hidden]) #urlbar {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+}
+/* #endregion */
+
+/* #region Header & Navigation
+   ========================================================================== */
+#navigator-toolbox {
+  position: absolute !important;
+  width: calc(var(--fen-max-width) + var(--fen-sidebar-splitter-width));
+  height: var(--fen-header-height);
+  z-index: 2 !important;
+  border: none !important;
+  padding-top: var(--fen-gap-y) !important;
+  background-color: var(--fen-header-bg-color) !important;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease 0.2s !important;
+}
+
+#toolbar-menubar,
+#TabsToolbar,
+#sidebar-button,
+#home-button,
+#customizableui-special-spring1,
+#customizableui-special-spring2,
+#PersonalToolbar {
+  display: none !important;
+}
+
+#nav-bar {
+  border-top: 0 !important;
+}
+
+#nav-bar > toolbaritem,
+#nav-bar-customization-target > toolbarbutton,
+#nav-bar-customization-target > toolbaritem {
+  opacity: var(--fen-header-btn-dim);
+}
+
+#nav-bar-customization-target {
+  background-color: var(--fen-header-bg-color);
+}
+
+#nav-bar-customization-target > toolbaritem.unified-extensions-item {
+  margin-left: 0 !important;
+}
+
+/* Navigation Buttons Positioning */
+#back-button {
+  margin-left: var(--fen-nav-btn-gap) !important;
+}
+
+body:not(:has(#sidebar-main[hidden])) #back-button {
+  margin-left: calc(
+    var(--fen-show-sidebar-gap) + var(--fen-nav-btn-gap)
+  ) !important;
+}
+
+/* Settings Menu */
+#PanelUI-button {
+  position: absolute !important;
+  width: 26px !important;
+  margin: 0 !important;
+  top: 0 !important;
+  left: calc(var(--fen-gap-x) + var(--fen-panelui-gap)) !important;
+}
+
+body:not(:has(#sidebar-main[hidden])) #PanelUI-button {
+  left: calc(var(--fen-show-sidebar-gap) + var(--fen-gap-x)) !important;
+}
+
+#PanelUI-menu-button {
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+panel#appMenu-popup {
+  background-image: linear-gradient(var(--fen-color), var(--fen-color));
+  background-repeat: no-repeat;
+  background-position: left;
+  background-size: 33.3333% 95%;
+}
+/* #endregion */
+
+/* #region URL Bar
+   ========================================================================== */
+#urlbar-container {
+  position: absolute;
+  width: 215px !important;
+  margin: 0 !important;
+  margin-left: var(--fen-gap-x) !important;
+  top: var(--fen-urlbar-position-y);
+}
+
+#urlbar {
+  transition: opacity 0.3s ease 0.2s !important;
+}
+
+body:not(:has(#sidebar-main[hidden])) #urlbar-container {
+  margin-left: 57.63px !important;
+}
+
+/* Hide default background unless focused */
+#urlbar:not(:is([breakout-extend])) .urlbar-background {
+  display: none !important;
+}
+
+#urlbar-background {
+  margin-left: calc(0.5 * var(--fen-gap-x)) !important;
+  border-radius: 8px !important;
+}
+
+body:not(:has(#sidebar-main[hidden])) #urlbar-background {
+  margin-left: 0 !important;
+}
+
+/* URL Bar Width Sync with Sidebar (Chunked Resize) */
+/* 200px range */
+body:has(#browser > #sidebar-box[style*="; width: 23"]) #urlbar-container {
+  width: 221px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 24"]) #urlbar-container {
+  width: 231px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 25"]) #urlbar-container {
+  width: 241px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 26"]) #urlbar-container {
+  width: 251px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 27"]) #urlbar-container {
+  width: 261px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 28"]) #urlbar-container {
+  width: 271px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 29"]) #urlbar-container {
+  width: 281px !important;
+}
+
+/* 300px range */
+body:has(#browser > #sidebar-box[style*="; width: 30"]) #urlbar-container {
+  width: 291px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 31"]) #urlbar-container {
+  width: 301px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 32"]) #urlbar-container {
+  width: 311px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 33"]) #urlbar-container {
+  width: 321px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 34"]) #urlbar-container {
+  width: 331px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 35"]) #urlbar-container {
+  width: 341px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 36"]) #urlbar-container {
+  width: 351px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 37"]) #urlbar-container {
+  width: 361px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 38"]) #urlbar-container {
+  width: 371px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 39"]) #urlbar-container {
+  width: 381px !important;
+}
+
+/* 400px range */
+body:has(#browser > #sidebar-box[style*="; width: 40"]) #urlbar-container {
+  width: 391px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 41"]) #urlbar-container {
+  width: 401px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 42"]) #urlbar-container {
+  width: 411px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 43"]) #urlbar-container {
+  width: 421px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 44"]) #urlbar-container {
+  width: 431px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 45"]) #urlbar-container {
+  width: 441px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 46"]) #urlbar-container {
+  width: 451px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 47"]) #urlbar-container {
+  width: 461px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 48"]) #urlbar-container {
+  width: 471px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 49"]) #urlbar-container {
+  width: 481px !important;
+}
+
+/* 500px+ range */
+body:has(#browser > #sidebar-box[style*="; width: 50"]) #urlbar-container {
+  width: 491px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 51"]) #urlbar-container {
+  width: 501px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 52"]) #urlbar-container {
+  width: 511px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 53"]) #urlbar-container {
+  width: 521px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 54"]) #urlbar-container {
+  width: 531px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 55"]) #urlbar-container {
+  width: 541px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 56"]) #urlbar-container {
+  width: 551px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 57"]) #urlbar-container {
+  width: 561px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 58"]) #urlbar-container {
+  width: 571px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 59"]) #urlbar-container {
+  width: 581px !important;
+}
+body:has(#browser > #sidebar-box[style*="; width: 6"]) #urlbar-container {
+  width: 591px !important;
+}
+
+#urlbar:is([focused][breakout-extend]) {
+  width: var(--fen-max-width) !important;
+}
+
+#urlbar-searchmode-switcher,
+#urlbar:not(:is([breakout-extend])) #page-action-buttons {
+  display: none !important;
+}
+
+/* URL Bar Input Styling */
+.urlbar-input-container {
+  border-radius: var(--fen-urlbar-border-radius) !important;
+  margin-left: 1px !important;
+}
+
+/* Security Icons (Show on Focus) */
+.urlbar-input-container #tracking-protection-icon-container,
+.urlbar-input-container #identity-permission-box {
+  opacity: 0;
+  position: absolute !important;
+}
+
+#urlbar:is([breakout-extend]) #tracking-protection-icon-container,
+#tracking-protection-icon-container:has([open]),
+#urlbar:is([breakout-extend]) #identity-permission-box,
+#identity-permission-box:has([open]) {
+  transition: opacity 0.2s ease;
+  position: relative !important;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+}
+
+/* Identity Box Alignment */
+#identity-box {
+  margin-left: 2px !important;
+}
+
+#identity-box.chromeUI #identity-icon-label {
+  display: none;
+}
+
+#identity-box.chromeUI {
+  margin-right: 6px !important;
+}
+
+body:has(#identity-box[pageproxystate="invalid"]) #urlbar-input {
+  padding-left: 5px !important;
+}
+
+#identity-box.extensionPage {
+  margin-right: 5px !important;
+}
+
+#identity-box #identity-icon-label {
+  margin-left: 6px !important;
+}
+
+#identity-box.verifiedDomain {
+  margin-right: 6px !important;
+}
+
+#identity-icon-box {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+/* Security Warning Display */
+#identity-box[pageproxystate="valid"].notSecureText #identity-icon-label {
+  display: block !important;
+}
+
+#identity-box[pageproxystate="valid"].notSecureText #identity-icon-box {
+  flex-shrink: 0 !important;
+  min-width: 125px;
+}
+
+/* HTTP Alert Overlay */
+body:has(#sidebar-box[hidden]):has(#identity-box.notSecure)::before {
+  content: "🦊 Fennec UI - HTTP Alert: Not Secure";
+  text-align: center;
+  font-size: 24px;
+  margin-left: 0;
+  display: block;
+  position: inherit;
+  z-index: 3;
+  width: 100%;
+  height: 46px;
+  padding-top: 8px;
+  box-sizing: border-box;
+  background-color: var(--fen-color);
+}
+/* #endregion */
+
+/* #region Sidebar
+   ========================================================================== */
+#sidebar-box {
+  max-width: var(--fen-max-width) !important;
+  min-width: 0 !important;
+  padding-left: var(--fen-gap-x);
+  background-color: var(--fen-color) !important;
+  transition:
+    width 0.3s ease,
+    max-width 0.3s ease,
+    margin-right 0.3s ease,
+    padding 0.3s step-start,
+    opacity 0.3s ease 0.2s !important;
+}
+
+#sidebar-header {
+  display: none !important;
+}
+
+box#sidebar-main {
+  position: relative !important;
+  top: var(--fen-header-height) !important;
+  height: calc(100vh - var(--fen-header-height)) !important;
+}
+
+/* Spacer for URL Bar Area */
+#sidebar-box::before {
+  content: "";
+  display: block;
+  height: var(--fen-tab-position-y);
+  width: 100%;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Custom URL Bar Background Alignment */
+#sidebar-box::after {
+  content: "";
+  position: absolute;
+  top: var(--fen-urlbar-bg-position-y);
+  height: var(--fen-urlbar-bg-height);
+  width: calc(100% - var(--fen-gap-x));
+  left: calc(var(--fen-gap-x));
+  pointer-events: none;
+  box-sizing: border-box;
+  background-color: var(--fen-urlbar-bg-color);
+  border-radius: var(--fen-urlbar-border-radius) !important;
+}
+
+.sidebar-browser-stack {
+  padding-bottom: var(--fen-gap-x);
+  background-color: var(--fen-color) !important;
+}
+
+/* Notifications */
+#notifications-toolbar {
+  position: absolute;
+  top: var(--fen-tab-position-y);
+  left: var(--fen-gap-x);
+  max-width: 250px;
+}
+
+/* Sidebar Splitter (Gutter) */
+#sidebar-splitter {
+  width: var(--fen-sidebar-splitter-width) !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background-color: transparent !important;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent var(--fen-header-height),
+    var(--fen-color) 0,
+    var(--fen-color) 100%
+  );
+}
+/* #endregion */
+
+/* #region Sideberry
+   Custom styles in sideberry.css (external extension)
+   ========================================================================== */
+/* #endregion */
