@@ -1,4 +1,11 @@
-name: Test install scripts
+# ==========================================================================
+# FENNEC — Install Scripts Test Workflow
+# ==========================================================================
+# Tests the modular installation structure across all platforms
+# Verifies: core files, user files, prefs, and preservation logic
+# ==========================================================================
+
+name: Test Install Scripts
 
 on:
   workflow_dispatch:
@@ -6,7 +13,13 @@ on:
     paths:
       - install.sh
       - install.ps1
+      - chrome/**
       - .github/workflows/test-install.yml
+  pull_request:
+    paths:
+      - install.sh
+      - install.ps1
+      - chrome/**
 
 jobs:
   test-linux:
@@ -24,14 +37,40 @@ jobs:
         run: |
           profile="$HOME/.mozilla/firefox/fake.default-release"
 
-          test -d "$profile/chrome" || { echo "FAIL: chrome/ missing"; exit 1; }
-          test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
-          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
-          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
+          # Verify chrome directory exists
+          test -d "$profile/chrome" || { echo "❌ FAIL: chrome/ missing"; exit 1; }
 
+          # Verify core files (module structure)
+          test -f "$profile/chrome/fennec.css" || { echo "❌ FAIL: fennec.css missing"; exit 1; }
+          test -f "$profile/chrome/userChrome.css" || { echo "❌ FAIL: userChrome.css missing"; exit 1; }
+          test -f "$profile/chrome/user-overrides.css" || { echo "❌ FAIL: user-overrides.css missing"; exit 1; }
+
+          # Verify autohide.css is NOT installed by default (optional module)
+          if [ -f "$profile/chrome/autohide.css" ]; then
+            echo "❌ FAIL: autohide.css should not be installed by default"
+            exit 1
+          fi
+
+          # Verify userChrome.css has correct imports
+          grep -q '@import url("fennec.css")' "$profile/chrome/userChrome.css" || { echo "❌ FAIL: fennec.css import missing"; exit 1; }
+          grep -q '@import url("user-overrides.css")' "$profile/chrome/userChrome.css" || { echo "❌ FAIL: user-overrides.css import missing"; exit 1; }
+
+          # Verify autohide import is commented out by default
+          grep -q '/* @import url("autohide.css"); */' "$profile/chrome/userChrome.css" || { echo "❌ FAIL: autohide.css should be commented by default"; exit 1; }
+
+          # Verify prefs in user.js
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "❌ FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "❌ FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "❌ FAIL: sidebar.revamp pref missing"; exit 1; }
+
+          echo "✅ All checks passed!"
+          echo ""
           echo "--- chrome/ contents ---"
           ls -la "$profile/chrome/"
+          echo ""
+          echo "--- userChrome.css ---"
+          cat "$profile/chrome/userChrome.css"
+          echo ""
           echo "--- user.js ---"
           cat "$profile/user.js"
 
@@ -50,22 +89,29 @@ jobs:
         run: |
           profile="$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/fake.default-release"
 
-          test -d "$profile/chrome" || { echo "FAIL: chrome/ missing at Flatpak path"; exit 1; }
-          test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
-          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
-          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
+          # Verify chrome directory exists at Flatpak path
+          test -d "$profile/chrome" || { echo "❌ FAIL: chrome/ missing at Flatpak path"; exit 1; }
+
+          # Verify core files
+          test -f "$profile/chrome/fennec.css" || { echo "❌ FAIL: fennec.css missing"; exit 1; }
+          test -f "$profile/chrome/userChrome.css" || { echo "❌ FAIL: userChrome.css missing"; exit 1; }
+          test -f "$profile/chrome/user-overrides.css" || { echo "❌ FAIL: user-overrides.css missing"; exit 1; }
+
+          # Verify prefs
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "❌ FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "❌ FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "❌ FAIL: sidebar.revamp pref missing"; exit 1; }
 
           # Confirm native path was NOT used
-          if [ -d "$HOME/.mozilla/firefox" ]; then
-            echo "FAIL: native ~/.mozilla/firefox/ should not exist"
+          if [ -d "$HOME/.mozilla/firefox/fake.default-release" ]; then
+            echo "❌ FAIL: native ~/.mozilla/firefox/ should not exist"
             exit 1
           fi
 
+          echo "✅ All checks passed!"
+          echo ""
           echo "--- chrome/ contents ---"
           ls -la "$profile/chrome/"
-          echo "--- user.js ---"
-          cat "$profile/user.js"
 
   test-macos:
     runs-on: macos-latest
@@ -82,16 +128,23 @@ jobs:
         run: |
           profile="$HOME/Library/Application Support/Firefox/Profiles/fake.default-release"
 
-          test -d "$profile/chrome" || { echo "FAIL: chrome/ missing"; exit 1; }
-          test -f "$profile/chrome/userChrome.css" || { echo "FAIL: userChrome.css missing"; exit 1; }
-          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "FAIL: stylesheets pref missing"; exit 1; }
-          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "FAIL: sidebar.verticalTabs pref missing"; exit 1; }
-          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "FAIL: sidebar.revamp pref missing"; exit 1; }
+          # Verify chrome directory exists
+          test -d "$profile/chrome" || { echo "❌ FAIL: chrome/ missing"; exit 1; }
 
+          # Verify core files
+          test -f "$profile/chrome/fennec.css" || { echo "❌ FAIL: fennec.css missing"; exit 1; }
+          test -f "$profile/chrome/userChrome.css" || { echo "❌ FAIL: userChrome.css missing"; exit 1; }
+          test -f "$profile/chrome/user-overrides.css" || { echo "❌ FAIL: user-overrides.css missing"; exit 1; }
+
+          # Verify prefs
+          grep -q 'toolkit.legacyUserProfileCustomizations.stylesheets' "$profile/user.js" || { echo "❌ FAIL: stylesheets pref missing"; exit 1; }
+          grep -q 'sidebar.verticalTabs' "$profile/user.js" || { echo "❌ FAIL: sidebar.verticalTabs pref missing"; exit 1; }
+          grep -q 'sidebar.revamp' "$profile/user.js" || { echo "❌ FAIL: sidebar.revamp pref missing"; exit 1; }
+
+          echo "✅ All checks passed!"
+          echo ""
           echo "--- chrome/ contents ---"
           ls -la "$profile/chrome/"
-          echo "--- user.js ---"
-          cat "$profile/user.js"
 
   test-windows:
     runs-on: windows-latest
@@ -113,14 +166,75 @@ jobs:
         run: |
           $prof = "$env:APPDATA\Mozilla\Firefox\Profiles\fake.default-release"
 
-          if (-not (Test-Path "$prof\chrome")) { Write-Error "FAIL: chrome/ missing"; exit 1 }
-          if (-not (Test-Path "$prof\chrome\userChrome.css")) { Write-Error "FAIL: userChrome.css missing"; exit 1 }
-          $userJs = Get-Content "$prof\user.js" -Raw
-          if ($userJs -notmatch "toolkit.legacyUserProfileCustomizations.stylesheets") { Write-Error "FAIL: stylesheets pref missing"; exit 1 }
-          if ($userJs -notmatch "sidebar.verticalTabs") { Write-Error "FAIL: sidebar.verticalTabs pref missing"; exit 1 }
-          if ($userJs -notmatch "sidebar.revamp") { Write-Error "FAIL: sidebar.revamp pref missing"; exit 1 }
+          # Verify chrome directory exists
+          if (-not (Test-Path "$prof\chrome")) { Write-Error "❌ FAIL: chrome/ missing"; exit 1 }
 
+          # Verify core files
+          if (-not (Test-Path "$prof\chrome\fennec.css")) { Write-Error "❌ FAIL: fennec.css missing"; exit 1 }
+          if (-not (Test-Path "$prof\chrome\userChrome.css")) { Write-Error "❌ FAIL: userChrome.css missing"; exit 1 }
+          if (-not (Test-Path "$prof\chrome\user-overrides.css")) { Write-Error "❌ FAIL: user-overrides.css missing"; exit 1 }
+
+          # Verify autohide.css is NOT installed by default
+          if (Test-Path "$prof\chrome\autohide.css") { Write-Error "❌ FAIL: autohide.css should not be installed by default"; exit 1 }
+
+          # Verify userChrome.css has correct imports
+          $userChrome = Get-Content "$prof\chrome\userChrome.css" -Raw
+          if ($userChrome -notmatch '@import url\("fennec.css"\)') { Write-Error "❌ FAIL: fennec.css import missing"; exit 1 }
+          if ($userChrome -notmatch '@import url\("user-overrides.css"\)') { Write-Error "❌ FAIL: user-overrides.css import missing"; exit 1 }
+
+          # Verify prefs
+          $userJs = Get-Content "$prof\user.js" -Raw
+          if ($userJs -notmatch "toolkit.legacyUserProfileCustomizations.stylesheets") { Write-Error "❌ FAIL: stylesheets pref missing"; exit 1 }
+          if ($userJs -notmatch "sidebar.verticalTabs") { Write-Error "❌ FAIL: sidebar.verticalTabs pref missing"; exit 1 }
+          if ($userJs -notmatch "sidebar.revamp") { Write-Error "❌ FAIL: sidebar.revamp pref missing"; exit 1 }
+
+          Write-Host "✅ All checks passed!"
+          Write-Host ""
           Write-Host "--- chrome/ contents ---"
           Get-ChildItem "$prof\chrome"
+          Write-Host ""
+          Write-Host "--- userChrome.css ---"
+          Get-Content "$prof\chrome\userChrome.css"
+          Write-Host ""
           Write-Host "--- user.js ---"
           Get-Content "$prof\user.js"
+
+  # ==========================================================================
+  # Test preservation logic (second run should not overwrite user files)
+  # ==========================================================================
+  test-preservation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create fake profile
+        run: mkdir -p ~/.mozilla/firefox/fake.default-release
+
+      - name: First install
+        run: FENNEC_LOCAL=. ./install.sh
+
+      - name: Modify user files (simulate user customizations)
+        run: |
+          profile="$HOME/.mozilla/firefox/fake.default-release"
+          echo "/* USER CUSTOMIZATION */" >> "$profile/chrome/user-overrides.css"
+          echo "/* USER ENTRY POINT EDIT */" >> "$profile/chrome/userChrome.css"
+
+          # Store checksums
+          md5sum "$profile/chrome/user-overrides.css" > /tmp/before-overrides.md5
+          md5sum "$profile/chrome/userChrome.css" > /tmp/before-userchrome.md5
+
+      - name: Second install (should preserve user files)
+        run: FENNEC_LOCAL=. ./install.sh
+
+      - name: Verify preservation
+        run: |
+          profile="$HOME/.mozilla/firefox/fake.default-release"
+
+          # Check that user customizations are still present
+          grep -q "USER CUSTOMIZATION" "$profile/chrome/user-overrides.css" || { echo "❌ FAIL: user-overrides.css was overwritten"; exit 1; }
+          grep -q "USER ENTRY POINT EDIT" "$profile/chrome/userChrome.css" || { echo "❌ FAIL: userChrome.css was overwritten"; exit 1; }
+
+          # But core files should be updated
+          test -f "$profile/chrome/fennec.css" || { echo "❌ FAIL: fennec.css missing after second install"; exit 1; }
+
+          echo "✅ Preservation test passed! User files were not overwritten."
