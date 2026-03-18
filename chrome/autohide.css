@@ -1,66 +1,111 @@
-/*
- * autohide.css — optional fennec module
- *
- * Sidebar must be enabled (not toggled off). When active, the drawer
- * auto-collapses when the mouse leaves and reappears on hover over
- * the left edge of the window.
- *
- * To enable:  uncomment the @import line in userChrome.css
- * To disable: comment it back out and restart Firefox
- */
+/* ==========================================================================
+   AUTOHIDE MODULE — Fennec Extension
+   ==========================================================================
 
-/* mirrors: #sidebar-box[hidden]
-   differs: extra max-width, margin-right transitions needed because
-   autohide collapses to 20px (detection zone) not 0px, using negative
-   margin to hide the overflow */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+   ⚠️  This file is managed by Fennec. Your changes will be lost on update.
+
+   ========================================================================== */
+
+/* #region Autohide Trigger Condition
+   Repeated selector pattern for DRY reference:
+
+   body
+     :not(:has(#sidebar-box:hover))
+     :not(:has(#navigator-toolbox:hover))
+     :not(:has(#sidebar-splitter:hover))
+
+   Meaning: "When mouse is NOT hovering sidebar, toolbar, OR splitter"
+   ========================================================================== */
+
+/* #region Collapsed Sidebar State
+   Mirrors: #sidebar-box[hidden] behavior from fennec.css
+   Differs: Collapses to 20px (detection zone) instead of 0px,
+            uses negative margin to hide overflow visually
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   #sidebar-box:not([hidden]) {
   display: flex !important;
+
+  /* Collapse to detection zone */
   width: 20px !important;
   min-width: 20px !important;
   max-width: 20px !important;
-  margin-right: -20px !important;
+  margin-right: -20px !important; /* Hide the 20px visually */
+
+  /* Hide content */
   overflow: hidden !important;
   padding: 0 !important;
   opacity: 0 !important;
+
+  /* Keep interactive for hover detection */
   pointer-events: auto !important;
   z-index: 10 !important;
-  transition: width 0.3s ease, max-width 0.3s ease, margin-right 0.3s ease, padding 0.3s step-end, opacity 0.2s ease !important;
+
+  /* Smooth collapse/expand */
+  transition:
+    width 0.3s ease,
+    max-width 0.3s ease,
+    margin-right 0.3s ease,
+    padding 0.3s step-end,
+    opacity 0.2s ease !important;
 }
 
-/* mirrors: body:has(#sidebar-box[hidden]:not(:hover)) #navigator-toolbox */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+/* #region Collapsed Header (navigator-toolbox)
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   #navigator-toolbox {
-  width: 0px !important;
+  width: 0 !important;
   overflow: hidden !important;
   pointer-events: none;
   opacity: 0 !important;
-  transition: width 0.3s ease, opacity 0.2s ease !important;
+
+  transition:
+    width 0.3s ease,
+    opacity 0.2s ease !important;
 }
 
-/* mirrors: body:has(#sidebar-box[hidden]:not(:hover)) toolbaritem#urlbar-container */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+/* #region Collapsed URL Bar Container
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   toolbaritem#urlbar-container {
-  width: 0px !important;
-  max-width: 0px !important;
+  width: 0 !important;
+  max-width: 0 !important;
   pointer-events: none;
 }
 
-/* mirrors: body:has(#sidebar-box[hidden]) #urlbar */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+/* #region Collapsed URL Bar Input
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   #urlbar {
   opacity: 0 !important;
   transition: opacity 0.2s ease !important;
 }
 
-/* mirrors: body:has(#sidebar-box[hidden]) #identity-icon-box */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+/* #region Collapsed Identity Box Background
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   #identity-icon-box {
   background-color: transparent !important;
 }
 
-/* autohide-only (no mirror in dynamic sidebar toggle) */
-body:not(:has(#sidebar-box:hover)):not(:has(#navigator-toolbox:hover)):not(:has(#sidebar-splitter:hover))
+/* #region Hide Splitter in Autohide Mode
+   Autohide-only rule — splitter unnecessary when using detection zone
+   ========================================================================== */
+body:not(:has(#sidebar-box:hover))
+  :not(:has(#navigator-toolbox:hover))
+  :not(:has(#sidebar-splitter:hover))
   #sidebar-splitter {
   display: none !important;
 }
+
+/* #endregion Autohide Module */
